@@ -2,17 +2,21 @@ import requests
 
 ENDPOINT_POSTS = "/posts"
 
-def _make_request(method, endpoint, headers, payload=None):
-    return requests.request(method, endpoint, headers=headers, json=payload)
+class PostsClient():
+    def __init__(self):
+        self.session = requests.Session()
+        self.base_url = "https://jsonplaceholder.typicode.com"
+        self.timeout = 10
 
-def get_post(base_url, post_id, headers):
-    return _make_request("GET", f"{base_url}{ENDPOINT_POSTS}/{post_id}", headers)
+    def get_post(self, post_id, timeout=None):
+        return self.session.get(f"{self.base_url}{ENDPOINT_POSTS}/{post_id}", timeout=self.timeout)
 
-def create_post(base_url, headers, payload):
-    return _make_request("POST", f"{base_url}{ENDPOINT_POSTS}", headers, payload)
+    def create_post(self, payload, timeout=None):
+        return self.session.post(f"{self.base_url}{ENDPOINT_POSTS}", json=payload, timeout=self.timeout)
 
-def update_post(base_url, post_id, headers, payload):
-    return _make_request("PUT", f"{base_url}{ENDPOINT_POSTS}/{post_id}", headers, payload)
+    def update_post(self, post_id, payload, timeout=None):
+        return self.session.put(f"{self.base_url}{ENDPOINT_POSTS}/{post_id}", json=payload, timeout=self.timeout)
 
-def delete_post(base_url, post_id, headers):
-    return _make_request("DELETE", f"{base_url}{ENDPOINT_POSTS}/{post_id}", headers)
+    def delete_post(self, post_id, timeout=None):
+        return self.session.delete(f"{self.base_url}{ENDPOINT_POSTS}/{post_id}", timeout=self.timeout)
+

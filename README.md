@@ -1,71 +1,106 @@
-# API Testing Project with Client Layer (JSONPlaceholder)
+# API Testing Project (JSONPlaceholder)
 
-A simple API testing project using pytest and requests with a client layer abstraction.
+Simple API testing project using `pytest` and `requests` with a client layer.
 
-## Notes
+## Overview
 
-JSONPlaceholder is a fake API used for testing purposes.  
-It does not persist data changes and often returns the request payload as a response.  
-Because of this, some negative validation scenarios are limited.
+This project demonstrates basic API testing approach:
+
+* separation of test logic and HTTP logic
+* usage of a client layer (`PostsClient`)
+* reusable assertions and fixtures
+* parametrized tests
+
+JSONPlaceholder is used as a mock API.
+It does not validate input data and does not persist changes, so some negative scenarios are intentionally not covered.
+
+---
 
 ## Project Structure
 
+```
 api-framework/
-├── client/        # HTTP client (wraps requests)
-├── data/          # test payloads
-├── tests/         # test cases using client functions
-├── conftest.py    # base_url fixture
+├── client/        # API clients (HTTP layer)
+├── data/          # test data (payloads)
+├── tests/         # test cases
+├── conftest.py    # pytest fixtures (client setup)
+```
+
+---
 
 ## Architecture
 
-Tests do not call requests directly.
+Tests do not call `requests` directly.
 
-All HTTP calls are handled through a client layer:
+Flow:
 
+```
 tests → client → requests
-        ↑
-     fixtures
+```
 
-The base URL is provided via pytest fixture in conftest.py.
-This improves readability and makes tests easier to maintain.
+* client layer handles all HTTP requests
+* tests focus on validation logic
+* pytest fixtures provide ready-to-use client instances
 
-Client layer centralizes HTTP logic and simplifies test maintenance.
+---
 
-Requests include basic headers (Content-Type: application/json) to simulate real API behavior.
+## Covered Functionality
 
-## Covered Endpoints
+### Posts API
 
-- POST /posts
-- GET /posts/{id}
-- PUT /posts/{id}
-- DELETE /posts/{id}
+* GET `/posts/{id}`
+* POST `/posts`
+* PUT `/posts/{id}`
+* DELETE `/posts/{id}`
+
+Test coverage includes:
+
+* status code validation
+* response structure validation
+* payload → response consistency (for create/update)
+* basic negative cases (invalid IDs where behavior is defined)
+
+---
+
+## Notes
+
+* JSONPlaceholder returns mocked responses
+* data is not реально created/updated/deleted
+* some responses simply mirror request payload
+
+Because of this:
+
+* strict server-side validation is not tested
+* tests focus on response structure and behavior
+
+---
 
 ## Requirements
 
-Python 3.10+
-pytest
-requests
+* Python 3.10+
+* pytest
+* requests
+
+---
 
 ## Installation
 
+```
 pip install -r requirements.txt
+```
+
+---
 
 ## Run tests
 
+```
 pytest -v
+```
 
-## Example
+---
 
-(venv) PS ...\api-framework> pytest tests/test_posts.py -v
-================================================== test session starts ==================================================
-...
-collected 31 items                                                                                                       
+## Example output
 
-...
-tests/test_posts.py::test_update_post_returns_200_without_required_key[2] PASSED                                   [ 87%]
-tests/test_posts.py::test_update_post_returns_200_without_required_key[3] PASSED                                   [ 90%]
-tests/test_posts.py::test_delete_post_returns_200_and_empty_json_with_invalid_id[-1] PASSED                        [ 93%]
-tests/test_posts.py::test_delete_post_returns_200_and_empty_json_with_invalid_id[0] PASSED                         [ 96%]
-tests/test_posts.py::test_delete_post_returns_200_and_empty_json_with_invalid_id[9999999999] PASSED                [100%]
-
-================================================== 31 passed in 28.41s ==================================================
+```
+tests/test_posts.py ..... PASSED
+```
