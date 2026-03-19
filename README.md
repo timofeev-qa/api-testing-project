@@ -2,29 +2,19 @@
 
 Simple API testing project using `pytest` and `requests` with a client layer.
 
-## Overview
-
-This project demonstrates basic API testing approach:
-
-* separation of test logic and HTTP logic
-* usage of a client layer (`PostsClient`)
-* reusable assertions and fixtures
-* parametrized tests
-
-JSONPlaceholder is used as a mock API.
-It does not validate input data and does not persist changes, so some negative scenarios are intentionally not covered.
+## Stack
+- Python
+- pytest
+- requests
 
 ---
 
-## Project Structure
+## Structure
 
-```
-api-framework/
-├── client/        # API clients (HTTP layer)
-├── data/          # test data (payloads)
-├── tests/         # test cases
-├── conftest.py    # pytest fixtures (client setup)
-```
+- client/ # API clients
+- data/ # payloads + shared assertions
+- tests/ # test cases
+- conftest.py # fixtures (clients)
 
 ---
 
@@ -32,75 +22,46 @@ api-framework/
 
 Tests do not call `requests` directly.
 
-Flow:
-
-```
 tests → client → requests
-```
 
-* client layer handles all HTTP requests
-* tests focus on validation logic
-* pytest fixtures provide ready-to-use client instances
+- clients handle HTTP logic  
+- tests focus on validation  
+- fixtures provide ready clients  
 
 ---
 
-## Covered Functionality
+## Covered
 
-### Posts API
+### Posts
+- GET /posts/{id}
+- POST /posts
+- PUT /posts/{id}
+- DELETE /posts/{id}
 
-* GET `/posts/{id}`
-* POST `/posts`
-* PUT `/posts/{id}`
-* DELETE `/posts/{id}`
+### Comments
+- GET /comments/{id}
+- GET /comments?postId={id}
 
-Test coverage includes:
-
-* status code validation
-* response structure validation
-* payload → response consistency (for create/update)
-* basic negative cases (invalid IDs where behavior is defined)
+### Relation
+- comments belong to post (postId == post.id)
+- invalid post → 404 + empty comments list
 
 ---
 
 ## Notes
 
-* JSONPlaceholder returns mocked responses
-* data is not реально created/updated/deleted
-* some responses simply mirror request payload
+JSONPlaceholder is a mock API:
+- no real persistence
+- limited validation
+- responses may mirror request payload
 
-Because of this:
-
-* strict server-side validation is not tested
-* tests focus on response structure and behavior
-
----
-
-## Requirements
-
-* Python 3.10+
-* pytest
-* requests
+Tests focus on:
+- status codes
+- response structure
+- filtering behavior
+- basic relations
 
 ---
 
-## Installation
-
-```
-pip install -r requirements.txt
-```
-
----
-
-## Run tests
-
-```
+## Run
 pytest -v
-```
-
----
-
-## Example output
-
-```
-tests/test_posts.py ..... PASSED
-```
